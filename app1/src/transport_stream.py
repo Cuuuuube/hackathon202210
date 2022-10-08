@@ -122,7 +122,7 @@ def parseIndividualPESPayload(fileHandle, startPos):
     local = readFile(fileHandle,n,4)
     k = 0
     while((local&0xFFFFFF00) != 0x00000100):
-        k += 1;
+        k += 1
         if (k > 100):
             return "Unknown AU type"
         local = readFile(fileHandle,n+k,4)

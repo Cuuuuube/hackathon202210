@@ -46,29 +46,19 @@ MONGO_DB_COLLECTION_NAME = "wifi"
 # Main function
 def sink_aggregation(json_data):
     aggregate_data = {
-        "identifier": None,
-        "manufacturerName": None,
-        "startTime": None,
-        "endTime": None,
+        "identifier": json_data["info"]["identifier"],
+        "manufacturerName": json_data["info"]["manufacturerName"],
+        "startTime": find_min(json_data["wifiData"],"eventTime"),
+        "endTime": find_max(json_data["wifiData"],"eventTime"),
         "wifiAggregate": {
-            "deviceType" : None,
-            "minRSSI": None,
-            "avgRSSI": None,
-            "maxRSSI": None,
-            "countBandChange" : None
+            "deviceType" : json_data["wifiData"][0]["deviceType"],
+            "minRSSI": find_min(json_data["wifiData"],"rssi"),
+            "avgRSSI": aggregate_data["wifiAggregate"]["avgRSSI"],
+            "maxRSSI": find_max(json_data["wifiData"],"rssi"),
+            "countBandChange" : count_value_change(json_data["wifiData"],"connection")
         },
-        "anomalies_report" : []
+        "anomalies_report" : detect_anomaly_min(json_data["wifiData"],"rssi",RSSITHRESHOLD)
     }
-    aggregate_data["identifier"] = json_data["info"]["identifier"]
-    aggregate_data["manufacturerName"] = json_data["info"]["manufacturerName"]
-    aggregate_data["startTime"] = find_min(json_data["wifiData"],"eventTime")
-    aggregate_data["endTime"] = find_max(json_data["wifiData"],"eventTime")
-    aggregate_data["wifiAggregate"]["deviceType"] = json_data["wifiData"][0]["deviceType"]
-    aggregate_data["wifiAggregate"]["countBandChange"] = count_value_change(json_data["wifiData"],"connection")
-    aggregate_data["wifiAggregate"]["minRSSI"] = find_min(json_data["wifiData"],"rssi")
-    aggregate_data["wifiAggregate"]["maxRSSI"] = find_max(json_data["wifiData"],"rssi")
-    aggregate_data["wifiAggregate"]["avgRSSI"] = calculate_avg(json_data["wifiData"],"rssi")
-    aggregate_data["anomalies_report"] = detect_anomaly_min(json_data["wifiData"],"rssi",RSSITHRESHOLD)
 
     identifier_data = json_data["info"]["identifier"]
 
@@ -88,9 +78,8 @@ def find_min(array,key):
     if len(array) >0:
         min = array[0][key]
         for i in range(len(array)):
-            if array[i][key] != None:
-                if array[i][key] < min:
-                    min = array[i][key]
+            if array[i][key] != None and array[i][key] < min :
+               min = array[i][key]
         return min 
     return None
 
@@ -98,9 +87,8 @@ def find_max(array,key):
     if len(array) >0:
         max = array[0][key]
         for i in range(len(array)):
-            if array[i][key] != None:
-                if array[i][key] > max:
-                    max = array[i][key]
+            if array[i][key] != None and array[i][key] > max :
+                max = array[i][key]
         return max 
     return None
 
@@ -129,14 +117,11 @@ def detect_anomaly_min(array,key,threshold):
         for i in range(len(array)):
             if array[i][key] < threshold:
                 anomaly_report = {
-                    "eventTime": None,
-                    "deviceType": None,
-                    "rssi": None
+                    "eventTime": array[i]["eventTime"],
+                    "deviceType": array[i]["deviceType"],
+                    "rssi": array[i]["rssi"]
                 }
-                anomaly_report["eventTime"] = array[i]["eventTime"]
-                anomaly_report["deviceType"] = array[i]["deviceType"]
                 anomaly_report["connection"] = array[i]["connection"]
-                anomaly_report["rssi"] = array[i]["rssi"]
                 array_anomaly.append(anomaly_report)
     return array_anomaly
 

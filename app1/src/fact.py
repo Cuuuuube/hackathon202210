@@ -11,7 +11,7 @@ import sys
 def factorielle(a):
     if a < 0:
         return 'undefined'
-    if a < 2:
+    elif a < 2:
         return 1
     return a*factorielle(a-1)
 
