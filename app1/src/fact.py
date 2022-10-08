@@ -8,12 +8,11 @@ import sys
  in  case of of negative return 0
 """
 
-def factorielle(a):
+def cmd_fact(a):
+    if a < 0 :
+        return "undefined"
     fact = 1
     while a > 0 :
         fact *= a
         a -= 1
     return fact
-
-def cmd_fact(n):
-    return str(factorielle(n))
