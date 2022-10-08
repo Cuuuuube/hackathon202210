@@ -9,11 +9,11 @@ import sys
 """
 
 def factorielle(a):
-    if a < 0:
-        return 'undefined'
-    elif a < 2:
-        return 1
-    return a*factorielle(a-1)
+    fact = 1
+    while a > 0 :
+        fact *= a
+        a -= 1
+    return fact
 
 def cmd_fact(n):
     return str(factorielle(n))
