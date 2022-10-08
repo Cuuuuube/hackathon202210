@@ -58,32 +58,7 @@ def main():
 
                 try:
                     command_type = command.get("type")
-                    if command_type == "prime_numbers":
-                        output = prime_numbers(**command.get("arguments"))
-                    elif command_type == "sum_prime_numbers":
-                        output = sum_prime_numbers(**command.get("arguments"))    
-                    elif command_type == "clone_product":
-                        output = clone_product(**command.get("arguments"))        
-                    elif command_type == "delete_product":
-                        output = delete_product(**command.get("arguments"))
-                    elif command_type == "sum_of_prices":
-                        output = sum_of_prices(**command.get("arguments"))      
-                    elif command_type == "parse_transport_stream":
-                        output = parse_transport_stream(**command.get("arguments"))
-                    elif command_type == "cmd_fact":
-                        output = cmd_fact(**command.get("arguments"))
-                    elif command_type == "get_x_max":
-                        output = get_x_max(**command.get("arguments"))
-                    elif command_type == "templating_dlms":
-                        output = templating_dlms(**command.get("arguments"))
-                    elif command_type == "decode_frame":
-                        output = decode_frame(**command.get("arguments"))          
-                    elif command_type == "sink_aggregation":
-                        output = sink_aggregation(**command.get("arguments"))
-
-                    else:
-                        output = f"{command.get('type')} not handled"
-
+                    output = str(command_type())(**command.get("arguments"))
                     f.write(f"{id} {output}\n")
 
                 except Exception as e:
